@@ -1,0 +1,32 @@
+# 🐍 Python – pliki tymczasowe
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 📦 Środowisko wirtualne
+venv/
+.venv/
+.env/
+
+# 🛠 Flask instancje i logi (jeśli powstaną)
+instance/
+*.log
+
+# 🧪 Cache testów (na wypadek przyszłych testów)
+.pytest_cache/
+
+# 🧠 Edytory / IDE
+.vscode/
+.idea/
+
+# 🖼 Systemowe pliki śmieci
+.DS_Store
+Thumbs.db
+
+# 💡 Tymczasowe/robocze pliki edycyjne
+*.bak
+*.tmp
+*~
+
+
