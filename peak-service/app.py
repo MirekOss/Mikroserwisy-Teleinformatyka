@@ -25,24 +25,33 @@ def options_entry():
     response.headers.add("Access-Control-Allow-Credentials", "true")
     return response, 204
 
-# ✅ Główna logika wpisu
+# Endpoint REST do rejestrowania wejścia użytkownika na szczyt
 @app.route("/api/add_entry", methods=["POST"])
-@jwt_required()
+@jwt_required()  # 🔐 Wymaga autoryzacji – tylko użytkownicy z ważnym tokenem JWT mogą dodać wpis
 def add_entry():
+    # Pobranie danych z żądania POST w formacie JSON
     data = request.get_json()
+
+    # Odczyt tożsamości użytkownika z tokena JWT (została tam zapisana przy logowaniu)
     user = get_jwt_identity()
+
+    # Odczyt nazwy szczytu z danych przesłanych przez użytkownika
     peak = data.get("peak")
 
+    # Walidacja danych – brakujący użytkownik lub szczyt → błąd 400
     if not peak or not user:
         return jsonify({"message": "Brak danych"}), 400
 
+    # Komunikacja z notification-service – wysłanie powiadomienia o zdobyciu szczytu
     try:
         requests.post("http://localhost:5003/api/notify", json={
             "message": f"{user.capitalize()} zdobył(a) szczyt {peak}"
         })
     except Exception as e:
+        # Obsługa ewentualnego błędu przy próbie wysłania powiadomienia
         print("❌ Błąd notyfikacji:", e)
 
+    # Zwrócenie potwierdzenia dodania wpisu
     return jsonify({"message": f"Dodano wejście: {user.capitalize()} - {peak}"}), 200
 
 @app.route("/graphql", methods=["POST"])

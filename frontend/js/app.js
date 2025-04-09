@@ -12,37 +12,50 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
 let jwtToken = null;
 
-// Logowanie i pobieranie tokena JWT
+// Logowanie i pobieranie tokena JWT z backendu
 const loginUser = async () => {
+    // Pobierz nazwę użytkownika wpisaną w formularzu
     const username = document.getElementById("username").value;
+
+    // Wyślij zapytanie POST do endpointu logowania (/api/login) w user-service
     const response = await fetch("http://localhost:5001/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username })
+        body: JSON.stringify({ username })  // Przekazanie danych jako JSON
     });
 
+    // Odbierz odpowiedź z tokenem JWT i nazwą użytkownika
     const result = await response.json();
+
+    // Zapisz token JWT do zmiennej globalnej (może być używany w przyszłych żądaniach)
     jwtToken = result.access_token;
 
+    // Zaktualizuj interfejs: pokaż informację o zalogowanym użytkowniku
     document.getElementById("userStatus").textContent = `Zalogowano jako: ${result.username}`;
 };
 
+// Wysyłanie informacji o zdobyciu szczytu – chronione zapytanie do backendu
 const addEntry = async () => {
+    // Pobierz nazwę szczytu wpisaną przez użytkownika z formularza
     const peak = document.getElementById("entryPeak").value;
 
+    // Sprawdź, czy użytkownik jest zalogowany (czy posiada token JWT)
     if (!jwtToken) {
-        alert("Musisz się najpierw zalogować.");
+        alert("Musisz się najpierw zalogować.");  // prosta walidacja klienta
+        return;  // przerwij działanie funkcji
     }
 
+    // Wyślij żądanie POST do chronionego endpointu `/api/add_entry` w serwisie peak-service
     const response = await fetch("http://localhost:5002/api/add_entry", {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${jwtToken}`
+            "Content-Type": "application/json",  // informacja, że dane są w formacie JSON
+            "Authorization": `Bearer ${jwtToken}` // dołączenie tokena JWT w nagłówku autoryzacyjnym
         },
-        body: JSON.stringify({ peak })
+        body: JSON.stringify({ peak })  // dane przesyłane do API – nazwa zdobytego szczytu
     });
 
+    // Odbierz odpowiedź z serwera i wyświetl ją użytkownikowi
     const result = await response.json();
     document.getElementById("entryStatus").textContent = `${result.message}`;
 };
