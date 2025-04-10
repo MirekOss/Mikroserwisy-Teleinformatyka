@@ -1,4 +1,4 @@
-# Skrypt PowerShell do uruchamiania mikroserwisów aplikacji górskiej (Windows)
+﻿# Skrypt PowerShell do uruchamiania mikroserwisów aplikacji górskiej (Windows)
 # Upewnij się, że jesteś w katalogu głównym projektu (Spotkanie-6)
 
 Write-Host "Aktywacja środowiska virtualenv..."

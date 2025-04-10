@@ -46,6 +46,11 @@ const addEntry = async () => {
     }
 
     // Wyślij żądanie POST do chronionego endpointu `/api/add_entry` w serwisie peak-service
+    // Ponieważ nagłówki zawierają `Authorization` (a także `Content-Type: application/json`),
+    // przeglądarka najpierw automatycznie wykona tzw. "preflight request" – zapytanie `OPTIONS`
+    // do serwera, aby upewnić się, że takie żądanie jest dozwolone (CORS).
+    // Dopiero jeśli serwer odpowie odpowiednimi nagłówkami CORS (`Access-Control-Allow-*`),
+    // nastąpi właściwe żądanie POST z danymi.
     const response = await fetch("http://localhost:5002/api/add_entry", {
         method: "POST",
         headers: {
@@ -134,15 +139,22 @@ async function fetchPeaksByMinHeight(minHeight) {
 
 
 // WebSocket - Socket.IO
+// Inicjalizacja połączenia WebSocket z serwerem powiadomień działającym na porcie 5003
+// Adres musi zgadzać się z adresem backendu, który uruchamia socketio.run(app, port=5003)
 const socket = io("http://localhost:5003");
+
+// Referencja do elementu HTML, w którym będą wyświetlane powiadomienia
 const notifications = document.getElementById("notifications");
 
+// Obsługa zdarzenia `connect` – wywoływana, gdy klient pomyślnie połączy się z serwerem WebSocket
 socket.on("connect", () => {
     console.log("Połączono z WebSocket");
 });
 
-socket.on("new_entry", (data) => {
-    const div = document.createElement("div");
+// Obsługa zdarzenia `new_event` – wysyłanego przez backend Flask-SocketIO (np. z endpointu /api/notify)
+// `data.text` zawiera treść powiadomienia, które chcemy pokazać użytkownikowi
+socket.on("new_event", (data) => {
+    const div = document.createElement("div");      // Tworzymy nowy <div> z treścią powiadomienia
     div.textContent = data.text;
-    notifications.prepend(div);
+    notifications.prepend(div);                     // Dodajemy na górę listy (najświeższe u góry)
 });

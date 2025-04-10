@@ -45,7 +45,7 @@ def add_entry():
     # Komunikacja z notification-service – wysłanie powiadomienia o zdobyciu szczytu
     try:
         requests.post("http://localhost:5003/api/notify", json={
-            "message": f"{user.capitalize()} zdobył(a) szczyt {peak}"
+            "message": f"{user.capitalize()} zdobył(a) szczyt {peak}."
         })
     except Exception as e:
         # Obsługa ewentualnego błędu przy próbie wysłania powiadomienia

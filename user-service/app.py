@@ -26,13 +26,16 @@ def loginUser():
 
     # Tworzenie tokena JWT z identyfikatorem użytkownika (identity=username)
     # Token będzie później używany do autoryzacji (np. z @jwt_required)
+    # Na stronie https://jwt.io/ można sprawdzić, co znajduje się w tokenie
+    # (w tym przypadku tożsamość użytkownika)
+    
     access_token = create_access_token(identity=username)
 
     # Przykład komunikacji między mikroserwisami – wysyłamy powiadomienie
     # do notification-service, że użytkownik się zalogował (lub zarejestrował)
     try:
         requests.post("http://localhost:5003/api/notify", json={
-            "message": f"{username.capitalize()} zarejestrował(a) się"
+            "message": f"{username.capitalize()} zarejestrował(a) się."
         })
     except Exception as e:
         # Obsługa błędu, np. gdy notification-service nie działa
